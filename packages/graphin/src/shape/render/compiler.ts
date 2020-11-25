@@ -62,7 +62,7 @@ const compiler = (extendNodeShape: ExtendNodeShape) => {
       // 如果为为selected状态，则不作高亮
       // if (node.hasState('selected') && name === 'highlight.light' && value) return;
 
-      Object.keys(initState).forEach(key => {
+      Object.keys(initState).forEach((key) => {
         // state 的 key 和 behavior 里触发的 name 匹配
         if (name === key) {
           shapes.forEach((g6Shape: Shape.Base) => {
@@ -82,9 +82,9 @@ const compiler = (extendNodeShape: ExtendNodeShape) => {
     },
     update(cfg: ModelConfig, node: Item) {
       // @ts-ignore
-      const { update = () => {} } = renderNodeShape(cfg as Node); 
+      const { update = () => {} } = renderNodeShape(cfg as Node);
       update(cfg, node);
-    }
+    },
   });
 };
 export default compiler;

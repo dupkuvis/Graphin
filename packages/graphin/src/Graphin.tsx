@@ -168,7 +168,7 @@ class Graph extends React.PureComponent<GraphinProps, GraphinState> {
   renderGraphWithLifeCycle = (firstRender: boolean) => {
     const { data } = this.state;
     const cloneData = cloneDeep(data);
-   
+
     if (firstRender) {
       // 为了提高fitview的效率 取边上4个点去进行第一次的fitview
       const firstRenderData = this.getBorderNodes(cloneData.nodes);
@@ -200,7 +200,7 @@ class Graph extends React.PureComponent<GraphinProps, GraphinState> {
         yOrderedNodes[yOrderedNodes.length - 1],
       ],
       'id',
-    ).filter(node => node);
+    ).filter((node) => node);
     return {
       nodes: borderNodes,
       edges: [],
