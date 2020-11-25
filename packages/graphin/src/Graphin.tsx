@@ -18,6 +18,7 @@ import { GraphinProps, GraphinState, ExtendedGraphOptions, ForceSimulation, Data
 /** utils */
 // import shallowEqual from './utils/shallowEqual';
 import deepEqual from './utils/deepEqual';
+import initState from './controller/state';
 
 import './index.less';
 
@@ -166,12 +167,42 @@ class Graph extends React.PureComponent<GraphinProps, GraphinState> {
 
   renderGraphWithLifeCycle = (firstRender: boolean) => {
     const { data } = this.state;
-    this.graph!.changeData(cloneDeep(data));
-    this.graph!.emit('afterchangedata');
+    const cloneData = cloneDeep(data);
     this.handleSaveHistory();
     if (firstRender) {
       initGraphAfterRender(this.props, this.graphDOM, this.graph);
+      // 为了提高fitview的效率 取边上4个点去进行第一次的fitview
+      const firstRenderData = this.getBorderNodes(cloneData.nodes);
+      if (this.graph) {
+        this.graph.changeData(firstRenderData);
+        this.graph.emit('firstrender');
+      }
     }
+    // 设置图中的状态为data传入的state
+    initState(this.graph, data);
+    setTimeout(() => {
+      this.graph!.changeData(cloneData);
+      this.graph!.emit('afterchangedata');
+    }, 0);
+  };
+
+  // 获取边角的4个顶点：所有节点x,y分别为最大最小的节点
+  getBorderNodes = (nodes = []) => {
+    const xOrderedNodes = cloneDeep(nodes).sort((pre, next) => pre.x - next.x);
+    const yOrderedNodes = cloneDeep(nodes).sort((pre, next) => pre.y - next.y);
+    const borderNodes = uniqBy(
+      [
+        xOrderedNodes[0],
+        xOrderedNodes[xOrderedNodes.length - 1],
+        yOrderedNodes[0],
+        yOrderedNodes[yOrderedNodes.length - 1],
+      ],
+      'id',
+    ).filter(node => node);
+    return {
+      nodes: borderNodes,
+      edges: [],
+    };
   };
 
   stopForceSimulation = () => {

@@ -1,7 +1,7 @@
 import G6 from '@antv/g6';
 import { Shape } from '@antv/g-canvas';
-import { ExtendNodeShape, ShapeComponent } from '../../types';
-import { Item } from '@antv/g6/lib/types';
+import { Item, ModelConfig } from '@antv/g6/lib/types';
+import { ExtendNodeShape, ShapeComponent, Node } from '../../types';
 
 const reset = (shapes: Shape.Base[], shapeComponents: ShapeComponent[]) => {
   shapes.forEach((shape, index: number) => {
@@ -80,6 +80,10 @@ const compiler = (extendNodeShape: ExtendNodeShape) => {
         }
       });
     },
+    update(cfg: ModelConfig, node: Item) {
+      const { update = () => {} } = renderNodeShape(cfg as Node);
+      update(cfg, node);
+    }
   });
 };
 export default compiler;
