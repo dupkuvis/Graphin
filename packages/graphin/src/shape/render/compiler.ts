@@ -81,7 +81,8 @@ const compiler = (extendNodeShape: ExtendNodeShape) => {
       });
     },
     update(cfg: ModelConfig, node: Item) {
-      const { update = () => {} } = renderNodeShape(cfg as Node);
+      // @ts-ignore
+      const { update = () => {} } = renderNodeShape(cfg as Node); 
       update(cfg, node);
     }
   });

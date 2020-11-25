@@ -2,7 +2,7 @@
 import React, { ErrorInfo } from 'react';
 import { Graph as GraphType } from '@antv/g6';
 
-import { cloneDeep } from 'lodash';
+import { cloneDeep, uniqBy } from 'lodash';
 /** controller */
 import initController, { initGraphAfterRender } from './controller/init';
 import registerController from './controller/register';
@@ -168,22 +168,24 @@ class Graph extends React.PureComponent<GraphinProps, GraphinState> {
   renderGraphWithLifeCycle = (firstRender: boolean) => {
     const { data } = this.state;
     const cloneData = cloneDeep(data);
-    this.handleSaveHistory();
+   
     if (firstRender) {
-      initGraphAfterRender(this.props, this.graphDOM, this.graph);
       // 为了提高fitview的效率 取边上4个点去进行第一次的fitview
       const firstRenderData = this.getBorderNodes(cloneData.nodes);
       if (this.graph) {
         this.graph.changeData(firstRenderData);
+        this.graph.fitView(20);
         this.graph.emit('firstrender');
       }
     }
+    this.graph!.changeData(cloneData);
+    this.graph!.emit('afterchangedata');
     // 设置图中的状态为data传入的state
     initState(this.graph, data);
-    setTimeout(() => {
-      this.graph!.changeData(cloneData);
-      this.graph!.emit('afterchangedata');
-    }, 0);
+    this.handleSaveHistory();
+    if (firstRender) {
+      initGraphAfterRender(this.props, this.graphDOM, this.graph);
+    }
   };
 
   // 获取边角的4个顶点：所有节点x,y分别为最大最小的节点
